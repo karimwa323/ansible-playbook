@@ -1,0 +1,27 @@
+---
+- name: "Build container weith ansible"
+  hosts: localhost
+  tasks:
+  - name: stop running ansible-container
+    command: docker stop ansible-container
+    ignore_errors: yes
+
+  - name: remove docker container 
+    command: docker rm ansible-container
+    ignore_errors: yes
+
+  - name: remove docker image
+    command: docker rmi ansible-img
+    ignore_errors: yes
+  
+  - name: build ansible image
+    command: docker build -t ansible-img .
+
+  - name: create tag for ansible-img
+    command: docker tag ansible-img karimovic/ansible-playook
+
+  - name: push image to docker hub
+    command: docker push karimovic/ansible-playook
+
+  - name: run container from ansible-img
+    command: docker run -d --name ansible-container -p 8002:80 ansible-img 
